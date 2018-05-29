@@ -8,6 +8,9 @@ namespace GameSolvingAlgorithms.GameInterfaces
         double GetPoints();
         PlayerType GetPlayerType();
         Algorithm GetAlgorithm();
+        void SetAlgorithm(Algorithm algorithm);
+        Heuristic GetHeuristic();
+        void SetHeuristic(Heuristic heuristic);
         int GetMinMaxDepth();
     }
 

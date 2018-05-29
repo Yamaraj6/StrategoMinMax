@@ -27,9 +27,9 @@ namespace GameStratego
             this.board = board;
         }
 
-        public IMove AIMakeMove(IPlayer player)
+        public IMove AIMakeMove()
         {
-            IMove move = gameAI.GetMove(player);
+            IMove move = gameAI.GetMove(players[playerWithMove]);
             
             if (move != null)
             {
@@ -66,7 +66,7 @@ namespace GameStratego
             playerWithMove = playerWithMove == 0 ? 1 : 0;
         }
 
-        public double CountResult(int resultPlayer)
+        public double CountResult(int resultPlayer, IPlayer player)
         {
             double result = 0;
             if (resultPlayer == 0)
@@ -78,42 +78,44 @@ namespace GameStratego
                 result = players[1].GetPoints() - players[0].GetPoints();
             }
 
-
-            if (resultPlayer != -1)
+            if (player.GetHeuristic() == Heuristic.CenterBetter)
             {
-                var _moves = board.GetOccupiedPlaces();
-                var _boardSize = board.GetBoardSize();
-                foreach (var _move in _moves)
+                if (resultPlayer != -1)
                 {
-                    if (_move.GetField().GetX() != 0 && _move.GetField().GetX() != _boardSize - 1 &&
-                    _move.GetField().GetY() != 0 && _move.GetField().GetY() != _boardSize - 1 &&
-                    _move.GetField().GetX() != 1 && _move.GetField().GetX() != _boardSize - 2 &&
-                        _move.GetField().GetY() != 1 && _move.GetField().GetY() != _boardSize - 2)
+                    var _moves = board.GetOccupiedPlaces();
+                    var _boardSize = board.GetBoardSize();
+                    foreach (var _move in _moves)
                     {
-                        result++;
-                    }
-                    else
-                    {
-                        result--;
+                        if (_move.GetField().GetX() != 0 && _move.GetField().GetX() != _boardSize - 1 &&
+                        _move.GetField().GetY() != 0 && _move.GetField().GetY() != _boardSize - 1 &&
+                        _move.GetField().GetX() != 1 && _move.GetField().GetX() != _boardSize - 2 &&
+                            _move.GetField().GetY() != 1 && _move.GetField().GetY() != _boardSize - 2)
+                        {
+                            result++;
+                        }
+                        else
+                        {
+                            result--;
+                        }
                     }
                 }
             }
 
-
-
-            // +1 głębokości za 14 sek
-            //var _move = board.GetBestMove();
-            //if (_move != null)
-            //{
-            //    if (resultPlayer != playerWithMove)
-            //    {
-            //        result -= Evaluator.RateMove(_move.GetField(), board);
-            //    }
-            //    else
-            //    {
-            //        result += Evaluator.RateMove(_move.GetField(), board);
-            //    }
-            //}
+            if (player.GetHeuristic() == Heuristic.Deeper)
+            {
+                var _move = board.GetBestMove();
+                if (_move != null)
+                {
+                    if (resultPlayer != playerWithMove)
+                    {
+                        result -= Evaluator.RateMove(_move.GetField(), board);
+                    }
+                    else
+                    {
+                        result += Evaluator.RateMove(_move.GetField(), board);
+                    }
+                }
+            }
             return result;
         }
 

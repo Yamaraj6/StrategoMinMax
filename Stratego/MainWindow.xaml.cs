@@ -27,7 +27,7 @@ namespace Stratego
     public partial class MainWindow : Window
     {
         private GameManager game;
-
+        private Stopwatch watch;
         public MainWindow()
         {
             InitializeComponent();
@@ -119,28 +119,45 @@ namespace Stratego
         private async void startBtn_Click(object sender, RoutedEventArgs e)
         {
             if (boardSizeTB.Text == "" ||
-                (minMaxDepthSP1.Parent != null && depthTB1.Text == "") ||
-                (minMaxDepthSP1.Parent != null && depthTB1.Text != "" && Convert.ToInt32(depthTB1.Text) < 1) ||
-                (minMaxDepthSP2.Parent != null && depthTB2.Text == "") ||
-                (minMaxDepthSP2.Parent != null && depthTB2.Text != "" && Convert.ToInt32(depthTB2.Text) < 1))
+                (minMaxDepthSP1.Parent != null && !depthCB1.IsChecked.GetValueOrDefault() && depthTB1.Text == "") ||
+                (minMaxDepthSP1.Parent != null && !depthCB1.IsChecked.GetValueOrDefault() && depthTB1.Text != "" && Convert.ToInt32(depthTB1.Text) < 1) ||
+                (minMaxDepthSP2.Parent != null && !depthCB2.IsChecked.GetValueOrDefault() && depthTB2.Text == "") ||
+                (minMaxDepthSP2.Parent != null && !depthCB2.IsChecked.GetValueOrDefault() && depthTB2.Text != "" && Convert.ToInt32(depthTB2.Text) < 1))
             {
                 return;
             }
 
-            var watch = Stopwatch.StartNew();
-            TimerStart(watch);
+            startBtn.IsEnabled = false;
+            TimerStart();
 
+
+            CheckDynamicDepth();
             game.NewGame(Convert.ToInt32(boardSizeTB.Text),
                         new ComboBox[] { playerCB1, playerCB2 },
                         new ComboBox[] { algorithmCB1, algorithmCB2 },
                         new TextBox[] { depthTB1, depthTB2 },
                         watch);
-         //   watch.Stop();
-            timeTb.Text = "KURWA";
         }
 
-        private async void TimerStart(Stopwatch watch)
+        private void CheckDynamicDepth()
         {
+            if (depthCB1.IsChecked.GetValueOrDefault())
+            {
+                depthTB1.Text = "100";
+            }
+            if (depthCB2.IsChecked.GetValueOrDefault())
+            {
+                depthTB2.Text = "100";
+            }
+        }
+
+        private async void TimerStart()
+        {
+            if (watch != null)
+            {
+                watch.Stop();
+            }
+            watch = Stopwatch.StartNew();
             var task= Task.Run(async () =>
             {
                 while (watch.IsRunning)
@@ -149,6 +166,7 @@ namespace Stratego
                 }
             });
             await task;
+            startBtn.IsEnabled = true;
         }
     }
 }

@@ -76,42 +76,47 @@ namespace GameSolvingAlgorithms
 
         private IMove AlfaBeta(IPlayer activePlayer)
         {
+            IMove move;
             int _depth = activePlayer.GetMinMaxDepth();
-            if(_depth==100)
+            if (_depth == 100)
             {
                 _depth = DynamicDepth();
+                if (_depth == 1)
+                {
+                    return game.GetBoard().GetFirstScoredMove();
+                }
             }
-
             minMax.SetResultPlayer(game, activePlayer);
             if (game.GetPlayers()[0].Equals(activePlayer))
             {
-                return minMax.GetAlfaBetaMoveNew(game, null, _depth,
+                move = minMax.GetAlfaBetaMoveNew(game, null, _depth,
                     Double.MinValue, Double.MaxValue);
             }
             else
             {
-                return minMax.GetAlfaBetaMoveNew(game, null, _depth, 
+                move = minMax.GetAlfaBetaMoveNew(game, null, _depth, 
                     Double.MinValue, Double.MaxValue);
             }
+            return move;
         }
 
         private int DynamicDepth()
         {
-            var size = game.GetBoard().GetBoardSize()/100;
+            float size =  (game.GetBoard().GetBoardSize()* game.GetBoard().GetBoardSize()) / 100f;
             int depth = 1;
-            if (game.GetBoard().GetPossibleMoves().Count < 5*size)
+            if (game.GetBoard().GetPossibleMoves().Count < 5+(size*0.1f))
             {
                 depth = 5;
             }
-            else if (game.GetBoard().GetPossibleMoves().Count < 10* size)
+            else if (game.GetBoard().GetPossibleMoves().Count < 10+ (size*0.25f))
             {
                 depth = 4;
             }
-            else if (game.GetBoard().GetPossibleMoves().Count < 17 * size)
+            else if (game.GetBoard().GetPossibleMoves().Count < 15+ (size*0.5f))
             {
                 depth = 3;
             }
-            else if (game.GetBoard().GetPossibleMoves().Count < 30 * size)
+            else if (game.GetBoard().GetPossibleMoves().Count <= 25 + (size * 1))
             {
                 depth = 2;
             }
@@ -128,5 +133,12 @@ namespace GameSolvingAlgorithms
         BestMoves,
         MinMax,
         AlfaBeta
+    }
+
+    public enum Heuristic
+    {
+        Normal,
+        CenterBetter,
+        Deeper
     }
 }

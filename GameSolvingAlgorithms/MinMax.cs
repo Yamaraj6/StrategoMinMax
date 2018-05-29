@@ -25,7 +25,7 @@ namespace GameSolvingAlgorithms.GameInterfaces
             {
                 if (lastMove != null)
                 {
-                    lastMove.SetPoints(game.CountResult(resultPlayer));
+                    lastMove.SetPoints(game.CountResult(resultPlayer, game.GetPlayers()[resultPlayer]));
                 }
                 return lastMove;
             }
@@ -62,7 +62,7 @@ namespace GameSolvingAlgorithms.GameInterfaces
             {
                 if (lastMove != null)
                 {
-                    lastMove.SetPoints(game.CountResult(resultPlayer));
+                    lastMove.SetPoints(game.CountResult(resultPlayer, game.GetPlayers()[resultPlayer]));
                 }
                 return lastMove;
             }

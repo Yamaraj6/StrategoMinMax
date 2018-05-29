@@ -10,7 +10,7 @@ namespace GameSolvingAlgorithms.GameInterfaces
         IBoard GetBoard();
         void MakeMove(IMove move);
         void UndoMove(IMove move);
-        double CountResult(int resultPlayer);
+        double CountResult(int resultPlayer, IPlayer player);
         int GetPlayerWithMove();
     }
 }

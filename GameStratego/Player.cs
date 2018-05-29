@@ -11,6 +11,7 @@ namespace GameStratego
         private double points;
         private PlayerType playerType;
         private Algorithm algorithm;
+        private Heuristic heuristic = Heuristic.Normal;
         private int minMaxDepth;
 
         public Player(PlayerType playerType)
@@ -65,6 +66,21 @@ namespace GameStratego
         public int GetMinMaxDepth()
         {
             return minMaxDepth;
+        }
+
+        public Heuristic GetHeuristic()
+        {
+            return heuristic;
+        }
+
+        public void SetHeuristic(Heuristic heuristic)
+        {
+            this.heuristic = heuristic;
+        }
+
+        public void SetAlgorithm(Algorithm algorithm)
+        {
+            this.algorithm = algorithm;
         }
     }
 }

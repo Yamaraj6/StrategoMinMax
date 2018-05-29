@@ -59,33 +59,33 @@ namespace Stratego
 
         void button_Click(object sender, RoutedEventArgs e)
         {
-            string[] numbers = Regex.Split((sender as Button).Name, @"\D+");
-            game.MakeMove(new Move(
-                new Field(Convert.ToInt32(numbers[1]), Convert.ToInt32(numbers[2])),
-                new StrategoFigure()));
-            UpdateGUI(sender as Button);
-            CPUMove();
+            if (game.players[playerTurn].GetPlayerType() == PlayerType.Human)
+            {
+                string[] numbers = Regex.Split((sender as Button).Name, @"\D+");
+                game.MakeMove(new Move(
+                    new Field(Convert.ToInt32(numbers[1]), Convert.ToInt32(numbers[2])),
+                    new StrategoFigure()));
+                UpdateGUI(sender as Button);
+                CPUMove();
+            }
         }
 
         private void UpdateGUI(Button btn)
         {
             playersPoints[playerTurn].Text = "" + game.players[playerTurn].GetPoints();
             btn.Click -= new RoutedEventHandler(button_Click);
-            //btn.Dispatcher.Invoke(delegate
-            //{
-                   switch (playerTurn)
-                    {
-                        case 0:
-                            btn.Background = Brushes.Green;
-                            playerTurn = 1;
-                            break;
-                        case 1:
-                            btn.Background = Brushes.Red;
-                            playerTurn = 0;
-                            break;
-                    }
-                //});
-            //return 42;
+            switch (playerTurn)
+            {
+                case 0:
+                    btn.Background = Brushes.Green;
+                    playerTurn = 1;
+                    break;
+                case 1:
+                    btn.Background = Brushes.Red;
+                    playerTurn = 0;
+                    break;
+            }
+            CheckIfGameOver();
         }
 
         public void RemoveBoard()
@@ -98,6 +98,7 @@ namespace Stratego
         public void NewGame(int boardSize, ComboBox[] playersInfo, ComboBox[] algorithmsInfo, TextBox[] minMaxDepth, Stopwatch watch)
         {
             this.watch = watch;
+            
             if (boardSize > 1)
             {
                 playerTurn = 0;
@@ -120,7 +121,7 @@ namespace Stratego
                 IMove move = null;
                 var task = Task.Run(() => 
                 {
-                       move = game.AIMakeMove(game.players[playerTurn]);
+                       move = game.AIMakeMove();
                 });
                 await task;
 
@@ -134,6 +135,13 @@ namespace Stratego
             }
         }      
        
+        private void CheckIfGameOver()
+        {
+            if (game.GetBoard().GetPossibleMoves().Count == 0)
+            {
+                watch.Stop();
+            }
+        }
 
         private Player NewPlayer(ComboBox playerInfo, ComboBox algorithmInfo, TextBox minMaxDepth)
         {
